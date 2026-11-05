@@ -1,25 +1,19 @@
 # des-frontend
 
-SvelteKit 3 + Svelte 5 + Tailwind CSS + Fabric.js 6 на Cloudflare Workers.
+Мінімальний SvelteKit-каркас для DevOps: SSR, same-origin `/api` proxy на `des-backend`, деплой на Cloudflare Workers.
 
-## Що є
+UI ще не реалізований. Головна сторінка показує відповідь `/health` і потрібна лише для перевірки, що SSR і service binding працюють.
 
-- SSR landing, каталог і картка товару.
-- CSR редактор на Fabric.js 6.
-- Same-origin `/api/*` proxy на `des-backend` через Cloudflare service binding.
-- Login/refresh через HttpOnly cookie `Path=/`.
-- SEO: meta, canonical, JSON-LD, `sitemap.xml`, `robots.txt`.
+## Локально
 
-## Локальна розробка
-
-Потрібен запущений backend на `http://localhost:8787`.
+Потрібен backend на `http://localhost:8787`.
 
 ```bash
 bun install
 bun run dev
 ```
 
-Vite проксіює `/api` на `http://localhost:8787`. Frontend: `http://localhost:5173`.
+Frontend: `http://localhost:5173`. Vite проксіює `/api` на backend.
 
 ```bash
 bun run check
