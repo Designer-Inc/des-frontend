@@ -1,75 +1,79 @@
 # AGENTS.md — des-frontend
 
-Мінімальний SvelteKit 3-каркас на Cloudflare Workers. **UI навмисно не реалізований.**
+## Призначення файлу
 
-Призначення репозиторію — DevOps/SSR/proxy/deploy skeleton, а не продуктова сторінка. Поточна головна сторінка лише показує `/health` через service binding.
+Цей файл описує, **як агенти працюють з репозиторієм**. Це не звіт про поточний стан, не список сторінок і не changelog.
 
-Джерело істини: [`des-docs`](https://github.com/Designer-Inc/des-docs), зокрема `adr/0006-sveltekit-hybrid.md`.
+Не оновлюй цей файл під кожну фічу, версію або зміну UI. Актуальний стан читай у:
+
+- `README.md`
+- `CONTRIBUTING.md`
+- `package.json`
+- `src/routes/`
+- `wrangler.toml`
+- [`des-docs`](https://github.com/Designer-Inc/des-docs), зокрема `adr/0006-sveltekit-hybrid.md`
+
+`des-frontend` — frontend-застосунок. Джерело істини API, схеми та продуктових правил — `des-docs`. Не вигадуй поля API або бізнес-логіку.
 
 ## Спочатку прочитай
 
 - `README.md`
 - `CONTRIBUTING.md`
+- `adr/0006-sveltekit-hybrid.md` у `des-docs`
+- `package.json`
 - `wrangler.toml`
 - `vite.config.ts`
-- `src/routes/+page.server.ts`
 - `src/routes/api/[...path]/+server.ts`
 
-## Локальний запуск
+Не покладайся на цей файл як на джерело поточного стану або переліку сторінок.
 
-Потрібен backend на `http://localhost:8787`. Backend потребує власного Supabase dev-проєкту; інструкція в `des-backend/CONTRIBUTING.md`.
+## Локальна розробка
+
+- Використовуй Bun і наявний lockfile.
+- Потрібен запущений backend на `http://localhost:8787`.
+- Backend потребує власного Supabase dev-проєкту; інструкція в `des-backend/CONTRIBUTING.md`.
+- Секрети локально не потрібні.
+- Використовуй scripts з `package.json`:
 
 ```bash
 bun install
-bun run dev      # http://localhost:5173
-bun run check    # svelte-check
+bun run dev
+bun run check
 bun run build
-bun run deploy   # build + wrangler deploy
+bun run deploy
 ```
 
-Секрети локально не потрібні.
+## Архітектурні правила
 
-## Архітектура
-
-- SvelteKit 3, Svelte 5, TypeScript, Vite, `@sveltejs/adapter-cloudflare`.
-- Cloudflare Worker `des-frontend`, custom domain `designer.r0ma.top`.
-- `src/routes/api/[...path]/+server.ts` — same-origin `/api` proxy.
-- Production: service binding `API` → Worker `des-backend`.
-- Dev: `http://localhost:8787`.
-- У SvelteKit 3 використовуй alias `#lib`, не `$lib`.
-
-## Коли UI буде замовлений
-
-- Публічні сторінки каталогу/товарів — SSR або prerender.
-- Редактор, кабінет, кошик, checkout, адмінка — CSR.
-- Fabric.js підключати тільки на клієнті, не в SSR-бандлі.
-- Браузер має ходити тільки через `/api`; жодних абсолютних URL API.
-- Дотримуйся `des-docs/openapi.yaml`; не вигадуй поля.
-
-Без явного запиту не додавай продуктові сторінки, Tailwind, Fabric.js або інші UI-залежності: каркас має залишатися мінімальним.
+- Браузер ходить тільки на same-origin `/api`. Жодних абсолютних URL API у клієнтському коді.
+- `/api` проксіюється server-side на backend: service binding у production, `localhost` у dev. Не обходь proxy.
+- Публічні сторінки — SSR або prerender; редактор і приватні сторінки — CSR. Дотримуйся `ADR-0006`.
+- Fabric.js та інші browser-only бібліотеки не повинні потрапляти в SSR-бандл.
+- Використовуй module alias, налаштований у проєкті (`package.json`/`tsconfig`). Не додавай другий alias.
+- Не додавай нові залежності, UI-бібліотеки або продуктові сторінки без явного запиту й узгодження з контрактом.
+- Тримай каркас мінімальним; не додавай код «на майбутнє».
 
 ## CI/CD
 
-`.github/workflows/frontend.yml`:
+- Workflow: `.github/workflows/frontend.yml`.
+- PR: typecheck/build без production-секретів.
+- Merge у `main`: build і deploy Worker.
+- Секрети описані в `README.md`. Не друкуй їх і не коміть.
+- Не пуш у `main`: працюй через PR, green checks і review/CODEOWNER.
+- Conventional Commits. Без force-push.
 
-- `check` — `svelte-check` + build на PR.
-- `deploy` — на push у `main`: build + `wrangler deploy`.
+Якщо PR з форка, workflows можуть вимагати ручного approve від maintainer.
 
-Секрети: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`.
+## Безпека
 
-Публічний репозиторій: не додавай секрети або приватні URL.
+Репозиторій публічний. Не додавай секрети, токени, приватні URL або персональні дані.
 
-## PR
+## Заборонено
 
-- Гілка `feat/...`, `fix/...`, `chore/...`; PR у `main`.
-- Обов'язково `bun run check` і `bun run build`.
-- 1 review + CODEOWNER; не пуш у `main`.
-- Conventional Commits; без force-push.
-
-## Не роби
-
-- Не додавай UI без явного запиту і узгодження з контрактом.
-- Не замінюй `/api` proxy на прямий `api.*` URL.
-- Не використовуй `$lib`; тільки `#lib`.
-- Не коміть `.svelte-kit/`, `node_modules/`, `.wrangler/`, `.env`.
-- Не додавай залежності «на майбутнє».
+- Додавати продуктові сторінки/UI без явного запиту й контракту.
+- Замінювати `/api` proxy на прямий API URL.
+- Вводити другий module alias.
+- Додавати залежності «на майбутнє».
+- Комітити `.svelte-kit/`, `node_modules/`, `.wrangler/`, build-артефакти.
+- Пушити в `main`, робити force-push або переписувати теги.
+- Дублювати в цьому файлі поточний список сторінок, версії або статус фіч.
