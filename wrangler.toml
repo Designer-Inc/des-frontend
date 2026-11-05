@@ -1,0 +1,15 @@
+name = "des-frontend"
+workers_dev = true
+main = ".svelte-kit/cloudflare/_worker.js"
+compatibility_date = "2026-11-05"
+compatibility_flags = ["nodejs_als"]
+
+assets = { binding = "ASSETS", directory = ".svelte-kit/cloudflare" }
+
+routes = [
+  { pattern = "designer.r0ma.top", custom_domain = true }
+]
+
+[[services]]
+binding = "API"
+service = "des-backend"
