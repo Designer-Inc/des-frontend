@@ -8,6 +8,8 @@
 
 Потрібен backend на `http://localhost:8787`.
 
+Backend локально потребує власного Supabase dev-проєкту; інструкція в `des-backend/CONTRIBUTING.md`.
+
 ```bash
 git clone git@github.com:Designer-Inc/des-frontend.git
 bun install
