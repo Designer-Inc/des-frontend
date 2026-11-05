@@ -2,6 +2,8 @@
 
 Мінімальний SvelteKit-каркас для DevOps: SSR, same-origin `/api` proxy на `des-backend`, деплой на Cloudflare Workers.
 
+Перед роботою: [CONTRIBUTING.md](CONTRIBUTING.md).
+
 UI ще не реалізований. Головна сторінка показує відповідь `/health` і потрібна лише для перевірки, що SSR і service binding працюють.
 
 ## Локально
