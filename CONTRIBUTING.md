@@ -31,7 +31,7 @@ bun run build
 4. Maintainer review і merge.
 5. Merge у `main` автоматично деплоїть `des-frontend`.
 
-GitHub Free для private-репозиторіїв не має branch protection. Тому **не пуште напряму в `main`**; відкривайте PR. CODEOWNERS автоматично додає maintainer у review.
+`main` захищений: потрібен PR, зелені перевірки `check` і review від CODEOWNER. Прямий push у `main` заблокований (admin може bypass).
 
 ## Контракт
 
