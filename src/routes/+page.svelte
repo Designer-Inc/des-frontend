@@ -8,7 +8,7 @@
 	<title>des-frontend</title>
 </svelte:head>
 
-<main>
+<main id="main">
 	<h1>des-frontend</h1>
 	<pre>{JSON.stringify(data.health, null, 2)}</pre>
 </main>
